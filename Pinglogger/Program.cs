@@ -12,19 +12,28 @@ namespace Pinglogger
     {
         static void Main(string[] args)
         {
-            DateTime now = new DateTime();
-            string outputString = String.Empty;
+            string ip = "8.8.8.8";
+            Console.Write("Ping IP [8.8.8.8]: ");
+            string input = Console.ReadLine();
+            if (input != "")
+            {
+                ip = input;
+            } 
             var proc = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "cmd.exe",
-                    Arguments = "/k ping 8.8.8.8 -t",
+                    Arguments = $"/k ping {ip} -t",
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     CreateNoWindow = true
                 }
             };
+            if (!Directory.Exists("C:/temp/"))
+            {
+                Directory.CreateDirectory("C:/temp/");
+            }
             using (StreamWriter w = File.AppendText("C:/temp/pinglog.txt"))
             {
                 w.WriteLine("-------New Session-------");
@@ -33,8 +42,8 @@ namespace Pinglogger
             while (!proc.StandardOutput.EndOfStream)
             {
                 string line = proc.StandardOutput.ReadLine();
-                now = DateTime.Now;
-                outputString = "" + now + ": " + line;
+                var now = DateTime.Now;
+                var outputString = "" + now + ": " + line;
                 Console.WriteLine(outputString);
                 using (StreamWriter w = File.AppendText("C:/temp/pinglog.txt"))
                 {
